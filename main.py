@@ -65,8 +65,6 @@ def next_turn(snake, food):
         del snake.coordinates[-1]
         canvas.delete(snake.squares[-1])
         del snake.squares[-1]
-
-
     
     if check_collisions(snake):
         game_over()
@@ -103,6 +101,7 @@ def check_collisions(snake):
             return True
     else:
         return False
+    
 def game_over():
     canvas.delete(ALL)
     canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2,text="Game Over", font=('consolas', 70), fill="red", tag="Game Over")

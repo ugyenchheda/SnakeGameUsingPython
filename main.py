@@ -4,8 +4,8 @@ import random
 #Setting up my constants
 GAME_WIDTH= 700
 GAME_HEIGHT= 700
-SPEED= 50
-SPACE_SIZE = 50
+SPEED= 80
+SPACE_SIZE = 30
 BODY_PARTS = 3
 SNAKE_COLOR = "#00FF00"
 FOOD_COLOR = "#FF0000"
@@ -22,17 +22,18 @@ class Snake:
             self.coordinates.append([0, 0])
 
         for x, y in self.coordinates:
-            square = canvas.create_rectangle(x, y, x +SPACE_SIZE, y +SPACE_SIZE, fill = SNAKE_COLOR, tag ="Dangerious Amazonian Snake")
+            square = canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill = 'red', tag ="Dangerious Amazonian Snake")
+            self.squares.append(square)
 
 class Food:
     def __init__(self):
 
-        x = random.randint(0, (GAME_WIDTH/SPACE_SIZE)* SPACE_SIZE)
-        y = random.randint(0, (GAME_HEIGHT/SPACE_SIZE) * SPACE_SIZE)
+        x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
+        y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
         
         self.coordinates = [x, y]
 
-        canvas.create_rectangle(x, y, x + SPACE_SIZE, y +SPACE_SIZE, fill =FOOD_COLOR, tag ="Delicious Food") 
+        canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=FOOD_COLOR, tag="food")
 
 def next_turn(snake, food):
     
@@ -49,21 +50,21 @@ def next_turn(snake, food):
 
     snake.coordinates.insert(0, (x, y))
     
-    square = canvas.create_rectangle(x,y, x +SPACE_SIZE, y + SPACE_SIZE, fill = SNAKE_COLOR)
+    square = canvas.create_rectangle(x,y, x + SPACE_SIZE, y + SPACE_SIZE, fill = SNAKE_COLOR)
 
     snake.squares.insert(0, square)
 
     if x == food.coordinates[0] and y == food.coordinates[1]:
-
         global score
-
-        score +1
-
-        label.config(text="score: {}".format(score))
-
+        score += 1
+        label.config(text="Score: {}".format(score))
         canvas.delete("food")
-
         food = Food()
+    
+    else:
+        del snake.coordinates[-1]
+        canvas.delete(snake.squares[-1])
+        del snake.squares[-1]
 
 
     
@@ -103,7 +104,8 @@ def check_collisions(snake):
     else:
         return False
 def game_over():
-    pass
+    canvas.delete(ALL)
+    canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2,text="Game Over", font=('consolas', 70), fill="red", tag="Game Over")
 
 window = Tk()
 window.title("Snake game by UGYEN")

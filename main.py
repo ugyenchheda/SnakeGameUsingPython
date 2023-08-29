@@ -11,8 +11,6 @@ SNAKE_COLOR = "#00FF00"
 FOOD_COLOR = "#FF0000"
 BACKGROUND_COLOR = "#000000"
 
-def start_screen(stdscr):
-    stdscr.getkey()
 
 class Snake:
     def __init__(self):
@@ -25,6 +23,16 @@ class Snake:
 
         for x, y in self.coordinates:
             square = canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill = 'red', tag ="Dangerious Amazonian Snake")
+            self.squares.append(square)
+    def reset(self):
+        for square in self.squares:
+            canvas.delete(square)
+        self.coordinates.clear()
+        self.squares.clear()
+        for _ in range(0, BODY_PARTS):
+            self.coordinates.append([0, 0])
+        for x, y in self.coordinates:
+            square = canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill='red', tag="Dangerous Amazonian Snake")
             self.squares.append(square)
 
 class Food:
@@ -104,15 +112,31 @@ def check_collisions(snake):
     else:
         return False
     
-def game_over(stdscr): 
-        canvas.delete(ALL)
-        canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2,text="Game Over\nPress Esc to exit or\nOther button to play again", font=('consolas',20), fill="red", tag="Game Over")
-        key = stdscr.getkey()
-        
-        while True: 
-            if ord(key) == 27:
-                break
+def game_over():
+    canvas.delete("all")
+    game_over_text = canvas.create_text(
+        canvas.winfo_width() / 2, 
+        canvas.winfo_height() / 2,
+        text="Game Over\nPress Esc to exit or\nAny other button to play again",
+        font=('consolas', 20),
+        fill="red",
+        tag="Game Over"
+    )
     
+    # Bind the user's input to handle play again or exit
+    window.bind('<Escape>', lambda event: window.quit())  # Exit the game
+    window.bind('<Key>', lambda event: restart_game())     # Restart the game
+
+def restart_game():
+    canvas.delete("all")
+    global score, direction
+    score = 0
+    direction = 'down'
+    label.config(text="Score: {}".format(score))
+    snake.reset()
+    food.__init__()  # Create a new food
+    next_turn(snake, food)  # Start the game again
+
 window = Tk()
 window.title("Snake game by UGYEN")
 window.resizable(False, False)

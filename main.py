@@ -124,9 +124,14 @@ def game_over():
     )
     
     # Bind the user's input to handle play again or exit
-    window.bind('<Escape>', lambda event: window.quit())  # Exit the game
+    window.bind('<Escape>', lambda event: exit_game())  # Exit the game
     window.bind('<Key>', lambda event: restart_game())     # Restart the game
 
+    def exit_game():
+        canvas.delete("all")
+        canvas.create_text(canvas.winfo_width() / 2, canvas.winfo_height() / 2, text="Thank You for Playing!", font=('consolas', 20), fill="white" )
+        window.after(2000, window.quit) 
+        
 def restart_game():
     canvas.delete("all")
     global score, direction

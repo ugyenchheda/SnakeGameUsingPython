@@ -11,6 +11,8 @@ SNAKE_COLOR = "#00FF00"
 FOOD_COLOR = "#FF0000"
 BACKGROUND_COLOR = "#000000"
 
+def start_screen(stdscr):
+    stdscr.getkey()
 
 class Snake:
     def __init__(self):
@@ -102,10 +104,15 @@ def check_collisions(snake):
     else:
         return False
     
-def game_over():
-    canvas.delete(ALL)
-    canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2,text="Game Over", font=('consolas', 70), fill="red", tag="Game Over")
-
+def game_over(stdscr): 
+        canvas.delete(ALL)
+        canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2,text="Game Over\nPress Esc to exit or\nOther button to play again", font=('consolas',20), fill="red", tag="Game Over")
+        key = stdscr.getkey()
+        
+        while True: 
+            if ord(key) == 27:
+                break
+    
 window = Tk()
 window.title("Snake game by UGYEN")
 window.resizable(False, False)

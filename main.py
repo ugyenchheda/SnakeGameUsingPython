@@ -1,10 +1,13 @@
 from tkinter import *
 from tkinter import PhotoImage, Canvas
+from tkinter import PhotoImage
+from PIL import Image, ImageTk
+
 import random
 
 #Setting up my constants
-GAME_WIDTH= 700
-GAME_HEIGHT= 700
+GAME_WIDTH= 600
+GAME_HEIGHT= 600
 SPEED= 80
 SPACE_SIZE = 30
 BODY_PARTS = 3
@@ -12,29 +15,43 @@ SNAKE_COLOR = "#00FF00"
 FOOD_COLOR = "#FF0000"
 BACKGROUND_COLOR = "#000000"
 
+class SnakeSegment:
+    def __init__(self, canvas, x, y, image):
+        self.canvas = canvas
+        self.image = image
+        self.segment = self.canvas.create_image(x, y, image=self.image, anchor="nw")
+
+    def move(self, x, y):
+        self.canvas.move(self.segment, x, y)
 
 class Snake:
     def __init__(self):
         self.body_size = BODY_PARTS
         self.coordinates = []
-        self.squares = []
+        self.snake_segments = []
+        snake_body_image = Image.open("images/mushroom.png")  # Replace with your snake body segment image
+        snake_body_image = ImageTk.PhotoImage(snake_body_image)
 
-        for i in range(0, BODY_PARTS ):
+        for i in range(0, BODY_PARTS):
             self.coordinates.append([0, 0])
 
         for x, y in self.coordinates:
-            square = canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill = 'red', tag ="Dangerious Amazonian Snake")
-            self.squares.append(square)
+            # Create SnakeSegment instances for each body segment
+            segment = SnakeSegment(canvas, x, y, snake_body_image)
+            self.snake_segments.append(segment)
+
     def reset(self):
-        for square in self.squares:
-            canvas.delete(square)
+        for segment in self.snake_segments:
+            self.canvas.delete(segment.segment)
         self.coordinates.clear()
-        self.squares.clear()
+        self.snake_segments.clear()
         for _ in range(0, BODY_PARTS):
             self.coordinates.append([0, 0])
+
         for x, y in self.coordinates:
-            square = canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill='red', tag="Dangerous Amazonian Snake")
-            self.squares.append(square)
+            # Create SnakeSegment instances for each body segment
+            segment = SnakeSegment(canvas, x, y, self.snake_body_image)
+            self.snake_segments.append(segment)
 
 class Food:
     def __init__(self):
@@ -44,7 +61,7 @@ class Food:
         self.coordinates = [x, y]
 
 # Load the mushroom image (provide the correct path to your image file)
-        self.image = PhotoImage(file="images/mushroom.png")  # Replace "mushroom.png" with your image file
+        self.image = PhotoImage(file="images/mushroom.png")  
 
 
         # Set the desired width and height for the image
@@ -93,7 +110,14 @@ def next_turn(snake, food):
 
     else:
         window.after(SPEED, next_turn, snake,food)
-
+    for i in range(len(snake.snake_segments)):
+        if i == 0:
+            x, y = snake.coordinates[0]
+            snake.snake_segments[i].move(x, y)
+        else:
+            x, y = snake.coordinates[i - 1]
+            snake.snake_segments[i].move(x, y)
+            
 def change_direction(new_direction):
     global direction
 

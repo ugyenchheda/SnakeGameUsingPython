@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import PhotoImage, Canvas
 import random
 
 #Setting up my constants
@@ -37,14 +38,25 @@ class Snake:
 
 class Food:
     def __init__(self):
-
         x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
         y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
-        
+
         self.coordinates = [x, y]
 
-        canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=FOOD_COLOR, tag="food")
+# Load the mushroom image (provide the correct path to your image file)
+        self.image = PhotoImage(file="images/mushroom.png")  # Replace "mushroom.png" with your image file
 
+
+        # Set the desired width and height for the image
+        image_width = 40  # Adjust the width as needed
+        image_height = 40  # Adjust the height as needed
+
+        # Resize the image
+        self.image = self.image.subsample(self.image.width() // image_width, self.image.height() // image_height)
+
+        # Create an image item using create_image
+        self.image_item = canvas.create_image(x, y, image=self.image, anchor="nw", tag="food")
+        
 def next_turn(snake, food):
     
     x, y = snake.coordinates[0]

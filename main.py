@@ -29,7 +29,7 @@ class Snake:
         self.body_size = BODY_PARTS
         self.coordinates = []
         self.snake_segments = []
-        snake_body_image = Image.open("images/mushroom.png")  # Replace with your snake body segment image
+        snake_body_image = Image.open("images/snake.png")  # Replace with your snake body segment image
         snake_body_image = ImageTk.PhotoImage(snake_body_image)
 
         for i in range(0, BODY_PARTS):
@@ -75,9 +75,8 @@ class Food:
         self.image_item = canvas.create_image(x, y, image=self.image, anchor="nw", tag="food")
         
 def next_turn(snake, food):
-    
     x, y = snake.coordinates[0]
-    
+
     if direction == "up":
         y -= SPACE_SIZE
     elif direction == "down":
@@ -88,10 +87,14 @@ def next_turn(snake, food):
         x += SPACE_SIZE 
 
     snake.coordinates.insert(0, (x, y))
-    
-    square = canvas.create_rectangle(x,y, x + SPACE_SIZE, y + SPACE_SIZE, fill = SNAKE_COLOR)
 
-    snake.squares.insert(0, square)
+    for i in range(len(snake.snake_segments)):
+        if i == 0:
+            x, y = snake.coordinates[0]
+            snake.snake_segments[i].move(x, y)
+        else:
+            x, y = snake.coordinates[i - 1]
+            snake.snake_segments[i].move(x, y)
 
     if x == food.coordinates[0] and y == food.coordinates[1]:
         global score
@@ -102,22 +105,12 @@ def next_turn(snake, food):
     
     else:
         del snake.coordinates[-1]
-        canvas.delete(snake.squares[-1])
-        del snake.squares[-1]
-    
+
     if check_collisions(snake):
         game_over()
-
     else:
-        window.after(SPEED, next_turn, snake,food)
-    for i in range(len(snake.snake_segments)):
-        if i == 0:
-            x, y = snake.coordinates[0]
-            snake.snake_segments[i].move(x, y)
-        else:
-            x, y = snake.coordinates[i - 1]
-            snake.snake_segments[i].move(x, y)
-            
+        window.after(SPEED, next_turn, snake, food)
+
 def change_direction(new_direction):
     global direction
 
